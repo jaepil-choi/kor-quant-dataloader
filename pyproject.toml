@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "kor-quant-dataloader"
+version = "0.1.0"
+description = ""
+authors = ["jaepil-choi <chljeffreyz@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "^2.1.4"
+numpy = "^1.26.2"
+opendartreader = "^0.2.3"
+finance-datareader = "^0.9.66"
+pykrx = "^1.0.45"
+tqdm = "^4.66.1"
+jupyterlab = "^4.0.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
