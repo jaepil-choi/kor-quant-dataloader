@@ -14,7 +14,7 @@ def show_catalog() -> pd.DataFrame:
     """    
     pass
 
-class Loader:
+class DataLoader:
     """
     A DataLoader class responsible for the user interface.
 
