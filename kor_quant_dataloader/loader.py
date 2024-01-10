@@ -1,6 +1,11 @@
 import numpy as np
 import pandas as pd
+
+from itertools import starmap
+
 from typing import Union, List
+
+from .datasource import DataSource ## check import
 
 def show_catalog() -> pd.DataFrame:
     """
@@ -49,13 +54,18 @@ class DataLoader:
         are automatically standardized by a common utility function to ensure consistency and 
         compatibility with the data source.
         """        
-        pass
+        self.source = source.lower()
+        self.start_date = start_date
+        self.end_date = end_date
+        self.universe = universe
+
+        # TODO: Validate inputs
 
     def get_data(
             self, 
             data: Union[str, List[str]],
             download=True,
-    ) -> pd.DataFrame:
+            ) -> pd.DataFrame:
         """
         Retrieves financial data specified by the 'data' parameter and returns it 
         as a pandas DataFrame. The structure of the returned DataFrame depends on 
@@ -78,6 +88,56 @@ class DataLoader:
             - Single string 'data': Index = dates, Columns = stock IDs.
             - List of strings 'data': MultiIndex Rows = (dates, stock IDs), Columns = data names.
         """        
-        pass
 
+        if isinstance(data, str):
+            df = self._collect_data(data, download)
+            # TODO: lv2 format으로 변경
 
+            return 'foo'
+        
+        elif isinstance(data, list):
+            func_args = [(d, download) for d in data]
+            all_df = starmap(self._collect_data, func_args)
+            all_df = pd.concat(all_df, axis=0)
+            # TODO: multi-index 처리
+
+            return 'foo'
+        else:
+            raise TypeError(f"Invalid data type for 'data': {type(data)}")
+    
+    # TODO: Add apply option feature
+    def _collect_data(
+            self, 
+            data: str, 
+            download: bool, 
+            ) -> pd.DataFrame:
+        
+        if self.source == 'pykrx':
+            reader = None
+        elif self.source == ('fdr' or 'financedatareader'):
+            reader = None
+        elif self.source == 'opendartreader':
+            reader = None
+          
+        df = reader.read(
+            data, 
+            self.start_date, 
+            self.end_date, 
+            self.universe, 
+            download
+            )
+
+        return df
+
+    def __repr__(self) -> str:
+        """
+        Returns a string representation of the DataLoader object.
+        """        
+        information = f'''
+Current DataLoader information:
+- source: {self.source}
+- start_date: {self.start_date}
+- end_date: {self.end_date}
+- universe: {self.universe}
+        '''
+        return information
