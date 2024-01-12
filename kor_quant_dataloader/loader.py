@@ -105,7 +105,6 @@ class DataLoader:
         else:
             raise TypeError(f"Invalid data type for 'data': {type(data)}")
     
-    # TODO: Add apply option feature
     def _collect_data(
             self, 
             data: str, 
@@ -119,15 +118,24 @@ class DataLoader:
         elif self.source == 'opendartreader':
             reader = None
           
-        df = reader.read(
+        collected = reader.read(
             data, 
             self.start_date, 
             self.end_date, 
-            self.universe, 
             download
             )
 
-        return df
+        return collected
+    
+    # TODO: Add features to filter each data with options
+    def _filter_data(
+        self, 
+        collected: pd.DataFrame,
+        options: dict) -> pd.DataFrame:
+        # TODO: (basic) filter by universe 
+        # TODO: (advanced) filter by options (e.g., fill='ffill'
+        pass
+        
     
     # TODO: Make properties private and add getters
     def set_date(start_date=None, end_date=None):
