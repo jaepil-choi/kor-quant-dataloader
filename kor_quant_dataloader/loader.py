@@ -138,21 +138,30 @@ class DataLoader:
         
     
     # TODO: Make properties private and add getters
-    def set_date(start_date=None, end_date=None):
-        assert start_date or end_date:
-            raise ValueError('Either start_date or end_date should be specified')
+    def set_date(
+            self, 
+            start_date=None, 
+            end_date=None
+            ):
+        assert start_date or end_date, 'Either start_date or end_date should be specified'
         
         self.start_date = start_date
         self.end_date = end_date
 
         return
     
-    def set_universe(universe):
+    def set_universe(
+            self, 
+            universe,
+            ):
         self.universe = universe
 
         return
     
-    def set_source(source):
+    def set_source(
+            self, 
+            source
+            ):
         self.source = source
 
         return
