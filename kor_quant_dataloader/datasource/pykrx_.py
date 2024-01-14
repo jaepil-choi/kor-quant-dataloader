@@ -17,6 +17,7 @@ class PykrxReader(BaseDataReader):
         self.download = None
 
         self.date_list = []
+        self.holidays = []
 
     def read(
         self,
@@ -37,10 +38,10 @@ class PykrxReader(BaseDataReader):
             is_inclusive=True
             )
 
-        fetched = self._fetch_data_all()
-        processed = self._preprocess_data(fetched)
+        fetched = self._fetch_data_all(self.date_list)
+        filtered = self._filter_data(fetched)
 
-        return processed
+        return filtered
 
     def _fetch_data_one(
             self,
@@ -70,8 +71,10 @@ class PykrxReader(BaseDataReader):
     def _get_available_local_dates(self) -> list:
         pass
 
-    def _preprocess_data(self) -> pd.DataFrame:
-        pass
+    def _filter_data(self, df) -> pd.DataFrame:
+        df = df.loc[:, self.data].copy()
+
+        return df
 
     def _remove_holidays(self) -> DataFrame:
         pass
@@ -79,7 +82,26 @@ class PykrxReader(BaseDataReader):
     def _show_catalog(self) -> pd.DataFrame:
         pass
 
-    
+class PykrxOHLCV(PykrxReader):
+    def __init__(self) -> None:
+        super().__init__()
 
+        self.available_cols = [
+            '시가',
+            '고가',
+            '저가',
+            '종가',
+            '거래량',
+            '거래대금',
+            '등락률',
+        ]
+
+    def _fetch_data_one(
+            self, 
+            date: str,
+            ) -> DataFrame:
+        di_snapshot = krx.stock.get_market_ohlcv_by_ticker (date, market='ALL')
+
+        return di_snapshot
 
 

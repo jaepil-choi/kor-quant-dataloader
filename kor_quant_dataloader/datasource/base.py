@@ -16,9 +16,9 @@ class BaseDataReader(ABC):
         download: bool
         ) -> pd.DataFrame:
         raise NotImplementedError
-
+    
     @abstractmethod
-    def _fetch_data(self):
+    def _fetch_data_all(self):
         raise NotImplementedError
     
     @abstractmethod
@@ -30,7 +30,7 @@ class BaseDataReader(ABC):
         pass
 
     @abstractmethod
-    def _transform_data(self) -> pd.DataFrame:
+    def _filter_data(self) -> pd.DataFrame:
         raise NotImplementedError
     
     @abstractmethod
