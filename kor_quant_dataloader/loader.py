@@ -5,7 +5,10 @@ from itertools import starmap
 
 from typing import Union, List
 
-# from .datasource import DataSource ## check import
+from .datasource.pykrx_ import (
+    # PykrxReader, # 나중엔 이것만 import 
+    PykrxOHLCV,
+)
 
 def show_catalog() -> pd.DataFrame:
     """
@@ -92,8 +95,9 @@ class DataLoader:
         if isinstance(data, str):
             df = self._collect_data(data, download)
             # TODO: lv2 format으로 변경
+            # TODO: format 변경하는 것은 별도의 transform method가 있어야 함. 
 
-            return 'foo'
+            return df
         
         elif isinstance(data, list):
             func_args = [(d, download) for d in data]
@@ -112,7 +116,10 @@ class DataLoader:
             ) -> pd.DataFrame:
         
         if self.source == 'pykrx':
-            reader = None
+            #TODO: pykrx children reader들 중 어떤 reader 써야할지 찾을 수 있게 만들기
+            #TODO: 각 krx children reader들은 class variable로 available data를 가지고 있어야 함
+            # 일단 임시방편으로 OHLCV만 받도록 함
+            reader = PykrxOHLCV()
         elif self.source == ('fdr' or 'financedatareader'):
             reader = None
         elif self.source == 'opendartreader':
