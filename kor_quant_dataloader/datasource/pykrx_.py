@@ -10,7 +10,17 @@ from kor_quant_dataloader.datasource.base import BaseDataReader
 from kor_quant_dataloader.utils import DateUtil
 
 class PykrxReader(BaseDataReader):
+    available_cols = []
+
     def __init__(self) -> None:
+        if not hasattr(self, 'available_cols'):
+            raise AttributeError(f'{self.__class__.__name__}.available_cols should be defined.')
+        
+        if set(PykrxReader.available_cols) & set(self.available_cols):
+            raise AttributeError(f'Other readers already have column names available_cols ')
+        else:
+            PykrxReader.available_cols += self.available_cols
+
         self.data = None
         self.start_date = None
         self.end_date = None
@@ -83,10 +93,7 @@ class PykrxReader(BaseDataReader):
         pass
 
 class PykrxOHLCV(PykrxReader):
-    def __init__(self) -> None:
-        super().__init__()
-
-        self.available_cols = [
+    available_cols = [
             '시가',
             '고가',
             '저가',
@@ -95,6 +102,9 @@ class PykrxOHLCV(PykrxReader):
             '거래대금',
             '등락률',
         ]
+    
+    def __init__(self) -> None:
+        super().__init__()
 
     def _fetch_data_one(
             self, 
