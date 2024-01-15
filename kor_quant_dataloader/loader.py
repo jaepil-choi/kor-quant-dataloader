@@ -93,21 +93,17 @@ class DataLoader:
         """        
 
         if isinstance(data, str):
-            df = self._collect_data(data, download)
-            # TODO: lv2 format으로 변경
-            # TODO: format 변경하는 것은 별도의 transform method가 있어야 함. 
-
-            return df
-        
+            data = [data]
         elif isinstance(data, list):
-            func_args = [(d, download) for d in data]
-            all_df = starmap(self._collect_data, func_args)
-            all_df = pd.concat(all_df, axis=0)
-            # TODO: multi-index 처리
-
-            return 'foo'
+            pass
         else:
             raise TypeError(f"Invalid data type for 'data': {type(data)}")
+
+        
+
+        # func_args = [(d, download) for d in data]
+        # all_df = starmap(self._collect_data, func_args)
+        # all_df = pd.concat(all_df, axis=0)
     
     def _collect_data(
             self, 
