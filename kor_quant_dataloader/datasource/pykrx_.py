@@ -13,16 +13,18 @@ from kor_quant_dataloader.utils import DateUtil
 class PykrxReader(BaseDataReader):
     @classmethod
     def get_available_cols(cls) -> list:
-        available_cols = reduce(list.__add__, [child.get_available_cols() for child in PykrxReader.__subclasses__()])
+        available_cols = reduce(list.__add__, [child.get_available_cols() for child in cls.__subclasses__()])
 
         return available_cols
 
     def __init__(self) -> None:
-        # if not hasattr(self, 'available_cols'):
-        #     raise AttributeError(f'{self.__class__.__name__}.available_cols should be defined.')
+        if not hasattr(self, 'available_cols'):
+            raise AttributeError(f'{self.__class__.__name__}.available_cols should be defined.')
         
-        # if set(PykrxReader.get_available_cols()) & set(self.get_available_cols()):
-        #     raise AttributeError(f'Other readers already have column names available_cols ')
+        # TODO: Check if the column names are already defined in other readers.
+        # already_exist_cols = set(PykrxReader.get_available_cols()) & set(self.get_available_cols())
+        # if already_exist_cols:
+        #     raise AttributeError(f'Other readers already have column names {already_exist_cols}')
         # else:
         #     PykrxReader.available_cols += self.available_cols
 
@@ -124,4 +126,5 @@ class PykrxOHLCV(PykrxReader):
 
         return di_snapshot
 
-
+class PykrxMarketCap(PykrxReader):
+    pass
