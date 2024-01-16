@@ -18,13 +18,13 @@ class PykrxReader(BaseDataReader):
         return available_cols
 
     def __init__(self) -> None:
-        if not hasattr(self, 'available_cols'):
-            raise AttributeError(f'{self.__class__.__name__}.available_cols should be defined.')
+        # if not hasattr(self, 'available_cols'):
+        #     raise AttributeError(f'{self.__class__.__name__}.available_cols should be defined.')
         
-        if set(PykrxReader.available_cols) & set(self.available_cols):
-            raise AttributeError(f'Other readers already have column names available_cols ')
-        else:
-            PykrxReader.available_cols += self.available_cols
+        # if set(PykrxReader.get_available_cols()) & set(self.get_available_cols()):
+        #     raise AttributeError(f'Other readers already have column names available_cols ')
+        # else:
+        #     PykrxReader.available_cols += self.available_cols
 
         self.data = None
         self.start_date = None
@@ -39,7 +39,7 @@ class PykrxReader(BaseDataReader):
         data: str,
         start_date: str,
         end_date: str,
-        download: bool
+        download: bool,
         ) -> pd.DataFrame:
 
         self.data = data

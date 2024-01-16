@@ -114,18 +114,19 @@ class DataLoader:
             ) -> pd.DataFrame:
         
         if self.source == 'pykrx':
-            reader = PykrxReader()
+            parent_reader = PykrxReader
         elif self.source == ('fdr' or 'financedatareader'):
-            reader = None
+            parent_reader = None
         elif self.source == 'opendartreader':
-            reader = None
+            parent_reader = None
         
-        assigned = self._assign_data_to_reader(reader, data)
+        assigned = self._assign_data_to_reader(parent_reader, data)
         
         collected = []
         for child_reader, assigned_data in assigned.items():
+            reader_instance = child_reader()
             collected.append(
-                child_reader.read(
+                reader_instance.read(
                     assigned_data, 
                     self.start_date, 
                     self.end_date, 
@@ -144,7 +145,7 @@ class DataLoader:
             ):
         not_available_col = set(data_list) - set(parent_reader.get_available_cols())    
         if not_available_col:
-            raise AttributeError(f'Data not available from {self.source}: {data_list}')
+            raise AttributeError(f'Data not available from {self.source}: {not_available_col}')
 
         reader_to_cols = {child_reader: child_reader.get_available_cols() for child_reader in parent_reader.__subclasses__()}
         col_to_reader = CommonOps.invert_dict_of_lists(reader_to_cols)

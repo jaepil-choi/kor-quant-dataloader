@@ -52,26 +52,26 @@ class DateUtil:
 
         return (pd.to_datetime(strdt) + pd.Timedelta(days=days)).strftime('%Y-%m-%d')
     
-    class CommonOps:
-        @staticmethod
-        def invert_dict(
-            d: dict
-            ) -> dict:
-            return {v: k for k, v in d.items()}
+class CommonOps:
+    @staticmethod
+    def invert_dict(
+        d: dict
+        ) -> dict:
+        return {v: k for k, v in d.items()}
+    
+    @staticmethod
+    def invert_dict_of_lists(
+        d: dict
+        ) -> dict:
+        return {v: k for k, v_list in d.items() for v in v_list}
+
+    @staticmethod
+    def invert_Nto1_dict(
+        d: dict
+        ) -> dict:
+        dd = defaultdict(list)
+
+        for k, v in d.items():
+            dd[v].append(k)
         
-        @staticmethod
-        def invert_dict_of_lists(
-            d: dict
-            ) -> dict:
-            return {v: k for k, v_list in d.items() for v in v_list}
-
-        @staticmethod
-        def invert_Nto1_dict(
-            d: dict
-            ) -> dict:
-            dd = defaultdict(list)
-
-            for k, v in d.items():
-                dd[v].append(k)
-            
-            return dict(dd)
+        return dict(dd)
