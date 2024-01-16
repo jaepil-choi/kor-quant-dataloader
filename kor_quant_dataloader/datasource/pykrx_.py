@@ -1,7 +1,8 @@
-from pandas.core.api import DataFrame as DataFrame
 import pykrx as krx
 
 import pandas as pd
+
+from functools import reduce
 
 import time
 from tqdm import tqdm
@@ -10,7 +11,11 @@ from kor_quant_dataloader.datasource.base import BaseDataReader
 from kor_quant_dataloader.utils import DateUtil
 
 class PykrxReader(BaseDataReader):
-    available_cols = []
+    @classmethod
+    def get_available_cols(cls) -> list:
+        available_cols = reduce(list.__add__, [child.get_available_cols() for child in PykrxReader.__subclasses__()])
+
+        return available_cols
 
     def __init__(self) -> None:
         if not hasattr(self, 'available_cols'):
@@ -86,7 +91,7 @@ class PykrxReader(BaseDataReader):
 
         return df
 
-    def _remove_holidays(self) -> DataFrame:
+    def _remove_holidays(self) -> pd.DataFrame:
         pass
 
     def _show_catalog(self) -> pd.DataFrame:
@@ -102,6 +107,11 @@ class PykrxOHLCV(PykrxReader):
             '거래대금',
             '등락률',
         ]
+
+    @classmethod
+    def get_available_cols(cls) -> list:
+
+        return cls.available_cols
     
     def __init__(self) -> None:
         super().__init__()
@@ -109,7 +119,7 @@ class PykrxOHLCV(PykrxReader):
     def _fetch_data_one(
             self, 
             date: str,
-            ) -> DataFrame:
+            ) -> pd.DataFrame:
         di_snapshot = krx.stock.get_market_ohlcv_by_ticker (date, market='ALL')
 
         return di_snapshot

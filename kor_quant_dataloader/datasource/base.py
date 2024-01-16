@@ -4,8 +4,12 @@ import pandas as pd
 
 class BaseDataReader(ABC):
     def __init__(self) -> None:
-        # self.available_data = []
         pass
+
+    @classmethod
+    @abstractmethod
+    def get_available_cols(cls) -> list:
+        raise NotImplementedError
 
     @abstractmethod
     def read(
