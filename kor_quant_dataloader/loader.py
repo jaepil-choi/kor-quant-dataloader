@@ -5,9 +5,10 @@ from itertools import starmap
 
 from typing import Union, List
 
+from .utils import CommonOps
+from .datasource.base import BaseDataReader
 from .datasource.pykrx_ import (
-    # PykrxReader, # 나중엔 이것만 import 
-    PykrxOHLCV,
+    PykrxReader,
 )
 
 def show_catalog() -> pd.DataFrame:
@@ -99,36 +100,58 @@ class DataLoader:
         else:
             raise TypeError(f"Invalid data type for 'data': {type(data)}")
 
-        
+        df = self._collect_data(data, download)
+        #TODO: format handle the df, 
+        #TODO: apply universe filter, 
+        #TODO: apply options
 
-        # func_args = [(d, download) for d in data]
-        # all_df = starmap(self._collect_data, func_args)
-        # all_df = pd.concat(all_df, axis=0)
+        return df
     
     def _collect_data(
             self, 
-            data: str, 
+            data: list, 
             download: bool, 
             ) -> pd.DataFrame:
         
         if self.source == 'pykrx':
-            #TODO: pykrx children reader들 중 어떤 reader 써야할지 찾을 수 있게 만들기
-            #TODO: 각 krx children reader들은 class variable로 available data를 가지고 있어야 함
-            # 일단 임시방편으로 OHLCV만 받도록 함
-            reader = PykrxOHLCV()
+            reader = PykrxReader()
         elif self.source == ('fdr' or 'financedatareader'):
             reader = None
         elif self.source == 'opendartreader':
             reader = None
-          
-        collected = reader.read(
-            data, 
-            self.start_date, 
-            self.end_date, 
-            download
+        
+        assigned = self._assign_data_to_reader(reader, data)
+        
+        collected = []
+        for child_reader, assigned_data in assigned.items():
+            collected.append(
+                child_reader.read(
+                    assigned_data, 
+                    self.start_date, 
+                    self.end_date, 
+                    download,
+                    )
             )
+        
+        collected_df = pd.concat(collected, axis=1)
 
-        return collected
+        return collected_df
+
+    def _assign_data_to_reader(
+            self, 
+            parent_reader: BaseDataReader,  
+            data_list: str
+            ):
+        not_available_col = set(data_list) - set(parent_reader.get_available_cols())    
+        if not_available_col:
+            raise AttributeError(f'Data not available from {self.source}: {data_list}')
+
+        reader_to_cols = {child_reader: child_reader.get_available_cols() for child_reader in parent_reader.__subclasses__()}
+        col_to_reader = CommonOps.invert_dict_of_lists(reader_to_cols)
+        data_to_reader = {data: col_to_reader[data] for data in data_list}
+        assigned = CommonOps.invert_Nto1_dict(data_to_reader)
+
+        return assigned
     
     # TODO: Add features to filter each data with options
     def _filter_data(
