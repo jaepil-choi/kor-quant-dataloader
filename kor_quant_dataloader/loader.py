@@ -134,7 +134,7 @@ class DataLoader:
                     )
             )
         
-        collected_df = pd.concat(collected, axis=1)
+        collected_df = pd.concat(collected, axis=0)
 
         return collected_df
 
