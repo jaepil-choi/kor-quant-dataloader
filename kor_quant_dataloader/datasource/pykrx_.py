@@ -66,6 +66,28 @@ class PykrxReader(BaseDataReader):
             ) -> pd.DataFrame:
         pass
 
+    def _melt_data_one(
+            self,
+            di_snapshot: pd.DataFrame,
+            date: str
+            ) -> pd.DataFrame:
+        
+        di_snapshot.reset_index(inplace=True)
+        di_snapshot.rename(columns={'티커': 'ticker'}, inplace=True)
+        di_snapshot.loc[:, 'date'] = date
+
+        data_columns = [col for col in di_snapshot.columns if col not in ['ticker', 'date']]
+
+        # Melt data for more robust data delivery. 
+        di_snapshot = di_snapshot.melt(
+            id_vars=['date', 'ticker'],
+            value_vars=data_columns,
+            var_name='data',
+            value_name='value'
+            )
+        
+        return di_snapshot
+
     def _fetch_data_all(
             self,
             date_list: list
@@ -73,7 +95,9 @@ class PykrxReader(BaseDataReader):
         
         di_snapshots = []
         for di in tqdm(date_list):
-            di_snapshots.append(self._fetch_data_one(di))
+            melt = self._fetch_data_one(di)
+            melt = self._melt_data_one(melt, di)
+            di_snapshots.append(melt)
         
         df = pd.concat(di_snapshots, axis=0)
 
@@ -88,8 +112,9 @@ class PykrxReader(BaseDataReader):
     def _get_available_local_dates(self) -> list:
         pass
 
+    #TODO: Change method name because it overlaps with the method name in DataLoader. 
     def _filter_data(self, df) -> pd.DataFrame:
-        df = df.loc[:, self.data].copy()
+        df = df[df['data'].isin(self.data)].copy()
 
         return df
 
@@ -122,7 +147,7 @@ class PykrxOHLCV(PykrxReader):
             self, 
             date: str,
             ) -> pd.DataFrame:
-        di_snapshot = krx.stock.get_market_ohlcv_by_ticker (date, market='ALL')
+        di_snapshot = krx.stock.get_market_ohlcv_by_ticker(date, market='ALL')
 
         return di_snapshot
 
