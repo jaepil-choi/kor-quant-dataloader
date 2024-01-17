@@ -112,6 +112,7 @@ class PykrxReader(BaseDataReader):
     def _get_available_local_dates(self) -> list:
         pass
 
+    #TODO: Change method name because it overlaps with the method name in DataLoader. 
     def _filter_data(self, df) -> pd.DataFrame:
         df = df[df['data'].isin(self.data)].copy()
 

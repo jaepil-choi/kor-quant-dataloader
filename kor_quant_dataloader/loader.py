@@ -5,7 +5,10 @@ from itertools import starmap
 
 from typing import Union, List
 
-from .utils import CommonOps
+from .utils import (
+    CommonOps,
+    PdOps
+)
 from .datasource.base import BaseDataReader
 from .datasource.pykrx_ import (
     PykrxReader,
@@ -95,13 +98,19 @@ class DataLoader:
 
         if isinstance(data, str):
             data = [data]
+            transform = 'single'
         elif isinstance(data, list):
-            pass
+            transform = 'multi'
         else:
             raise TypeError(f"Invalid data type for 'data': {type(data)}")
 
-        df = self._collect_data(data, download)
-        #TODO: format handle the df, 
+        collected = self._collect_data(data, download)
+
+        if transform  == 'single':
+            df = PdOps.melt_to_single(collected)
+        elif transform == 'multi':
+            df = PdOps.melt_to_multi(collected)
+
         #TODO: apply universe filter, 
         #TODO: apply options
 

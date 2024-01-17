@@ -75,3 +75,25 @@ class CommonOps:
             dd[v].append(k)
         
         return dict(dd)
+
+class PdOps:
+    @staticmethod
+    def melt_to_single(
+        melt_df: pd.DataFrame,
+        ) -> pd.DataFrame:
+        assert melt_df['data'].unique().size == 1, 'Dataframe contains multiple data types.'
+
+        single = melt_df.pivot(index='date', columns='ticker', values='value')
+        single.sort_index(inplace=True)
+
+        return single
+
+    @staticmethod
+    def melt_to_multi(
+        melt_df: pd.DataFrame,
+        ) -> pd.DataFrame:
+
+        multi = melt_df.pivot_table(index=['date', 'ticker'], columns='data', values='value')
+        multi.sort_index(inplace=True)
+
+        return multi
