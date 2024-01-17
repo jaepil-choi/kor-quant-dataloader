@@ -127,4 +127,51 @@ class PykrxOHLCV(PykrxReader):
         return di_snapshot
 
 class PykrxMarketCap(PykrxReader):
-    pass
+    available_cols = [
+        '시가총액',
+        '거래량',
+        # '거래대금', # OHLCV의 거래대금과 겹친다. 서로 다른 정보인가 같은 정보인가? 
+        '상장주식수',
+    ]
+
+    @classmethod
+    def get_available_cols(cls) -> list:
+
+        return cls.available_cols
+    
+    def __init__(self) -> None:
+        super().__init__()
+
+    def _fetch_data_one(
+            self, 
+            date: str,
+            ) -> pd.DataFrame:
+        di_snapshot = krx.stock.get_market_cap_by_ticker(date, market='ALL')
+
+        return di_snapshot
+
+class PykrxFunda(PykrxReader):
+    available_cols = [
+        'BPS',
+        'PBR',
+        'PER',
+        'EPS',
+        'DIV',
+        'DPS',
+    ]
+
+    @classmethod
+    def get_available_cols(cls) -> list:
+
+        return cls.available_cols
+    
+    def __init__(self) -> None:
+        super().__init__()
+
+    def _fetch_data_one(
+            self, 
+            date: str,
+            ) -> pd.DataFrame:
+        di_snapshot = krx.stock.get_market_fundamental(date, market='ALL')
+
+        return di_snapshot
