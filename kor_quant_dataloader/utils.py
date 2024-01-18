@@ -31,6 +31,14 @@ class DateUtil:
         return strdt
 
     @staticmethod
+    def strdt_to_intdate(
+        strdt: str
+        ) -> int:
+        DateUtil.validate_date(strdt)
+
+        return int(strdt.replace('-', ''))
+
+    @staticmethod
     def intdate_to_timestamp(
         intdate: int
         ) -> pd.Timestamp:
