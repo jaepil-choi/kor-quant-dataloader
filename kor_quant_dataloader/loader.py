@@ -105,14 +105,13 @@ class DataLoader:
             raise TypeError(f"Invalid data type for 'data': {type(data)}")
 
         collected = self._collect_data(data, download)
+        filtered = self._filter_data(collected, options=None)
+        #TODO: apply options
 
         if transform  == 'single':
-            df = PdOps.melt_to_single(collected)
+            df = PdOps.melt_to_single(filtered)
         elif transform == 'multi':
-            df = PdOps.melt_to_multi(collected)
-
-        #TODO: apply universe filter, 
-        #TODO: apply options
+            df = PdOps.melt_to_multi(filtered)
 
         return df
     
@@ -168,9 +167,11 @@ class DataLoader:
         self, 
         collected: pd.DataFrame,
         options: dict) -> pd.DataFrame:
-        # TODO: (basic) filter by universe 
+        filtered = collected[collected['ticker'].isin(set(self.universe))]
+
         # TODO: (advanced) filter by options (e.g., fill='ffill'
-        pass
+        
+        return filtered
         
     
     # TODO: Make properties private and add getters
