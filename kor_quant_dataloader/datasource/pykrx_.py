@@ -1,5 +1,6 @@
 import pykrx as krx
 
+import numpy as np
 import pandas as pd
 
 from functools import reduce
@@ -9,6 +10,17 @@ from tqdm import tqdm
 
 from kor_quant_dataloader.datasource.base import BaseDataReader
 from kor_quant_dataloader.utils import DateUtil
+
+def infer_holidays(df) -> pd.DataFrame:
+
+    def check_all_zeros_or_nan(group):
+        return (group['value'].isna() | (group['value'] == 0)).all()
+    
+    holidays = df[df['data'] == '종가'].groupby('date').filter(check_all_zeros_or_nan)['date'].unique()
+    holidays = np.sort(holidays).tolist()
+
+    return holidays
+
 
 class PykrxReader(BaseDataReader):
     @classmethod
@@ -38,13 +50,17 @@ class PykrxReader(BaseDataReader):
 
     def read(
         self,
-        data: str,
+        data: list,
         start_date: str,
         end_date: str,
         download: bool,
+        remove_holidays: bool,
         ) -> pd.DataFrame:
 
         self.data = data
+        if remove_holidays and ('종가' not in self.data):
+            self.data.append('종가')
+        
         self.start_date = start_date
         self.end_date = end_date
         self.download = download
@@ -118,9 +134,6 @@ class PykrxReader(BaseDataReader):
 
         return df
 
-    def _remove_holidays(self) -> pd.DataFrame:
-        pass
-
     def _show_catalog(self) -> pd.DataFrame:
         pass
 
@@ -154,7 +167,7 @@ class PykrxOHLCV(PykrxReader):
 class PykrxMarketCap(PykrxReader):
     available_cols = [
         '시가총액',
-        '거래량',
+        # '거래량',
         # '거래대금', # OHLCV의 거래대금과 겹친다. 서로 다른 정보인가 같은 정보인가? 
         '상장주식수',
     ]

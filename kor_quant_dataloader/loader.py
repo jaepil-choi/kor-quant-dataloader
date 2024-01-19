@@ -40,7 +40,8 @@ class DataLoader:
             source: str, 
             start_date: str, 
             end_date: str=None, 
-            universe: Union[list, np.ndarray]=None
+            universe: Union[list, np.ndarray]=None, 
+            remove_holidays: bool=True,
             ) -> None:
         """
         Initializes the DataLoader with the specified parameters for loading 
@@ -65,6 +66,7 @@ class DataLoader:
         self.start_date = start_date
         self.end_date = end_date
         self.universe = universe
+        self.remove_holidays = remove_holidays
 
         # TODO: Validate inputs
 
@@ -109,7 +111,7 @@ class DataLoader:
         #TODO: apply options
 
         if transform  == 'single':
-            df = PdOps.melt_to_single(filtered)
+            df = PdOps.melt_to_single(filtered) #TODO: molten_to_single is better.
         elif transform == 'multi':
             df = PdOps.melt_to_multi(filtered)
 
@@ -139,6 +141,7 @@ class DataLoader:
                     self.start_date, 
                     self.end_date, 
                     download,
+                    self.remove_holidays,
                     )
             )
         
@@ -149,7 +152,7 @@ class DataLoader:
     def _assign_data_to_reader(
             self, 
             parent_reader: BaseDataReader,  
-            data_list: str
+            data_list: list
             ):
         not_available_col = set(data_list) - set(parent_reader.get_available_cols())    
         if not_available_col:

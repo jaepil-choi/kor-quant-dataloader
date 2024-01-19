@@ -36,10 +36,6 @@ class BaseDataReader(ABC):
     @abstractmethod
     def _filter_data(self) -> pd.DataFrame:
         raise NotImplementedError
-    
-    @abstractmethod
-    def _remove_holidays(self) -> pd.DataFrame:
-        raise NotImplementedError
 
     @abstractmethod
     def _show_catalog(self) -> pd.DataFrame:
