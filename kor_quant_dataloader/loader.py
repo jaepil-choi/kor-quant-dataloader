@@ -68,6 +68,8 @@ class DataLoader:
         self.universe = universe
         self.remove_holidays = remove_holidays
 
+        self.tradingdays = []
+
         # TODO: Validate inputs
 
     def get_data(
@@ -111,9 +113,9 @@ class DataLoader:
         #TODO: apply options
 
         if transform  == 'single':
-            df = PdOps.melt_to_single(filtered) #TODO: molten_to_single is better.
+            df = PdOps.molten_to_single(filtered) #TODO: molten_to_single is better.
         elif transform == 'multi':
-            df = PdOps.melt_to_multi(filtered)
+            df = PdOps.molten_to_multi(filtered)
 
         return df
     
@@ -141,11 +143,14 @@ class DataLoader:
                     self.start_date, 
                     self.end_date, 
                     download,
-                    self.remove_holidays,
                     )
             )
         
         collected_df = pd.concat(collected, axis=0)
+
+        if self.remove_holidays:
+            self.tradingdays = parent_reader.get_tradingdays(self.start_date, self.end_date)
+            collected_df = collected_df[collected_df['date'].isin(self.tradingdays)]
 
         return collected_df
 
@@ -170,13 +175,15 @@ class DataLoader:
         self, 
         collected: pd.DataFrame,
         options: dict) -> pd.DataFrame:
-        filtered = collected[collected['ticker'].isin(set(self.universe))]
-
+        
         # TODO: (advanced) filter by options (e.g., fill='ffill'
         
-        return filtered
-        
-    
+        if self.universe:
+            filtered = collected[collected['ticker'].isin(set(self.universe))]
+            return filtered
+        else:
+            return collected
+
     # TODO: Make properties private and add getters
     def set_date(
             self, 

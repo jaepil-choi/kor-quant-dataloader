@@ -11,16 +11,15 @@ from tqdm import tqdm
 from kor_quant_dataloader.datasource.base import BaseDataReader
 from kor_quant_dataloader.utils import DateUtil
 
-def infer_holidays(df) -> pd.DataFrame:
+# def infer_holidays(df) -> pd.DataFrame:
 
-    def check_all_zeros_or_nan(group):
-        return (group['value'].isna() | (group['value'] == 0)).all()
+#     def check_all_zeros_or_nan(group):
+#         return (group['value'].isna() | (group['value'] == 0)).all()
     
-    holidays = df[df['data'] == '종가'].groupby('date').filter(check_all_zeros_or_nan)['date'].unique()
-    holidays = np.sort(holidays).tolist()
+#     holidays = df[df['data'] == '종가'].groupby('date').filter(check_all_zeros_or_nan)['date'].unique()
+#     holidays = np.sort(holidays).tolist()
 
-    return holidays
-
+#     return holidays
 
 class PykrxReader(BaseDataReader):
     @classmethod
@@ -46,7 +45,7 @@ class PykrxReader(BaseDataReader):
         self.download = None
 
         self.date_list = []
-        self.holidays = []
+        # self.holidays = []
 
     def read(
         self,
@@ -54,12 +53,12 @@ class PykrxReader(BaseDataReader):
         start_date: str,
         end_date: str,
         download: bool,
-        remove_holidays: bool,
+        # remove_holidays: bool,
         ) -> pd.DataFrame:
 
         self.data = data
-        if remove_holidays and ('종가' not in self.data):
-            self.data.append('종가')
+        # if remove_holidays and ('종가' not in self.data):
+        #     self.data.append('종가')
         
         self.start_date = start_date
         self.end_date = end_date
@@ -136,6 +135,13 @@ class PykrxReader(BaseDataReader):
 
     def _show_catalog(self) -> pd.DataFrame:
         pass
+
+    @staticmethod
+    def get_tradingdays(start_date: str, end_date: str, index_code='1028') -> list:
+        tradingdays = krx.stock.get_index_ohlcv(start_date, end_date, index_code)
+        tradingdays = [dt.strftime('%Y-%m-%d') for dt in tradingdays.index.tolist()]
+
+        return tradingdays
 
 class PykrxOHLCV(PykrxReader):
     available_cols = [

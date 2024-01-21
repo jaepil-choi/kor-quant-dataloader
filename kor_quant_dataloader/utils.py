@@ -86,7 +86,7 @@ class CommonOps:
 
 class PdOps:
     @staticmethod
-    def melt_to_single(
+    def molten_to_single(
         melt_df: pd.DataFrame,
         ) -> pd.DataFrame:
         assert melt_df['data'].unique().size == 1, 'Dataframe contains multiple data types.'
@@ -97,7 +97,7 @@ class PdOps:
         return single
 
     @staticmethod
-    def melt_to_multi(
+    def molten_to_multi(
         melt_df: pd.DataFrame,
         ) -> pd.DataFrame:
 
