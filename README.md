@@ -17,9 +17,10 @@
 - **Holiday Handling**: Option to exclude holidays from the dataset.
 
 ## Installation
-```bash
-pip install kor-quant-dataloader
-```
+
+**Note**: `kor-quant-dataloader` is currently under development and has not yet been deployed to PyPI. As such, it cannot be installed via `pip` at this moment. This section will be updated once the package is available on PyPI.
+
+To keep informed about the release and availability of `kor-quant-dataloader` on PyPI, you can watch or star the repository on GitHub for updates.
 
 - Required Dependency
     - `pykrx`
