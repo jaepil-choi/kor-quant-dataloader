@@ -188,3 +188,10 @@ pip-selfcheck.json
 ## sandbox for dev
 sandbox.ipynb
 sandbox.py
+
+## Ignore data
+*.csv
+*.pickle
+*.pkl
+*.h5
+*.hdf5
