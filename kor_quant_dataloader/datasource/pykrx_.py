@@ -143,6 +143,37 @@ class PykrxReader(BaseDataReader):
 
         return tradingdays
 
+class PykrxAdjPrice(PykrxReader):
+    available_cols = [
+        '시가', # 기준가
+        '종가',
+        '변동폭', 
+        '등락률', 
+        '거래량', 
+        '거래대금',
+    ]
+
+    @classmethod
+    def get_available_cols(cls) -> list:
+
+        return cls.available_cols
+    
+    def __init__(self) -> None:
+        super().__init__()
+    
+    def _fetch_data_one(
+            self, 
+            date: str,
+            ) -> pd.DataFrame:
+        di_snapshot = krx.stock.get_market_price_change_by_ticker(
+            fromdate=date, 
+            todate=date,
+            market='ALL',
+            adjusted=False,
+            )
+
+        return di_snapshot
+
 class PykrxOHLCV(PykrxReader):
     available_cols = [
             '시가',
