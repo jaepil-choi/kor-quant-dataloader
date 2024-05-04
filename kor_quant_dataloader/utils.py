@@ -8,13 +8,9 @@ class DateUtil:
     def get_daterange(
         start_date: str,
         end_date: str,
-        is_inclusive: bool = True
         ) -> list:
         DateUtil.validate_date(start_date)
         DateUtil.validate_date(end_date)
-
-        if is_inclusive:
-            end_date = DateUtil.add_strdt(end_date, 1)
         
         return pd.date_range(start_date, end_date).strftime('%Y-%m-%d').tolist()
         

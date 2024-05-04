@@ -8,7 +8,6 @@ class TestDateUtils:
         assert kqdl.DateUtil.get_daterange(
             start_date='2021-12-25',
             end_date='2022-01-05',
-            is_inclusive=True
             ) == [
                 '2021-12-25',
                 '2021-12-26',

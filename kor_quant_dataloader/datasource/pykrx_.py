@@ -67,7 +67,6 @@ class PykrxReader(BaseDataReader):
         self.date_list = DateUtil.get_daterange(
             self.start_date,
             self.end_date,
-            is_inclusive=True
             )
 
         fetched = self._fetch_data_all(self.date_list)
