@@ -14,6 +14,19 @@ from .datasource.pykrx_ import (
     PykrxReader,
 )
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+env = os.getenv('ENV')
+
+if env == 'prod':
+    import warnings
+    warnings.filterwarnings('ignore')
+elif env == 'dev':
+    pass
+
 def show_catalog() -> pd.DataFrame:
     """
     Displays the collection of available data in the catalog.
