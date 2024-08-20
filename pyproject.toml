@@ -15,6 +15,7 @@ pykrx = "^1.0.45"
 tqdm = "^4.66.1"
 jupyterlab = "^4.0.9"
 pytest = "^7.4.4"
+python-dotenv = "^1.0.1"
 
 
 [build-system]
